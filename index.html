@@ -1,0 +1,251 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA — Banca Privada Digital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <div id="auth-container" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="brand-logo">AURA</div>
+                <p class="brand-subtitle">BANCA PRIVADA</p>
+            </div>
+
+            <form id="form-login" class="auth-form active">
+                <h2>Iniciar Sesión</h2>
+                <p class="form-desc">Introduce tus credenciales ejecutivas para acceder al ecosistema.</p>
+
+                <div class="input-group">
+                    <label>Documento de Identificación (CUI)</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-id-card"></i>
+                        <input id="login-cui" placeholder="Ej. 2998340120101" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Clave de Acceso</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="login-pin" placeholder="••••" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">Autenticar Credenciales</button>
+                <p class="auth-switch">¿Nuevo en el ecosistema? <a href="#" onclick="switchAuthForm('register')">Registrar Cuenta Ejecutiva</a></p>
+            </form>
+
+            <form id="form-register" class="auth-form">
+                <h2>Registro Patrimonial</h2>
+                <p class="form-desc">Crea un registro único en nuestra infraestructura financiera.</p>
+
+                <div class="input-group">
+                    <label>Nombre Completo</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user"></i>
+                        <input id="reg-name" placeholder="Ej. Alejandro Silva" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Documento de Identificación (CUI)</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-id-card"></i>
+                        <input id="reg-cui" placeholder="13 dígitos únicos" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Clave de Seguridad (PIN Numérico)</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-key"></i>
+                        <input type="password" id="reg-pin" placeholder="4 dígitos" maxlength="4" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">Establecer Cuenta Financiera</button>
+                <p class="auth-switch">¿Ya posees una cuenta? <a href="#" onclick="switchAuthForm('login')">Iniciar Sesión</a></p>
+            </form>
+        </div>
+    </div>
+
+    <div id="main-app" class="app-layout hidden">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <span class="logo-txt">AURA</span>
+                <span class="sub-txt">FINANCIAL MODULERS</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-target="sec-resumen">
+                    <i class="fa-solid fa-chart-pie"></i> Posición Consolidada
+                </a>
+                <a href="#" class="nav-item" data-target="sec-transferencias">
+                    <i class="fa-solid fa-money-bill-transfer"></i> Transferencias
+                </a>
+                <a href="#" class="nav-item" data-target="sec-donaciones">
+                    <i class="fa-solid fa-hand-holding-heart"></i> Módulo Donaciones
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-pill">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <div class="user-info">
+                        <span id="user-display-name">Cargando...</span>
+                        <span id="account-display-id" class="acc-id">ID: --</span>
+                    </div>
+                </div>
+                <button onclick="logout()" class="btn-logout"><i class="fa-solid fa-power-off"></i> Cerrar Sesión</button>
+            </div>
+        </aside>
+
+        <main class="content-area">
+            <header class="main-header">
+                <div class="header-welcome">
+                    <h1 id="greeting">Buenos días</h1>
+                    <p>Ecosistema Privado Autorizado.</p>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-pill">
+                        <span class="label">ESTADO DE SERVICIOS</span>
+                        <span class="value txt-aprobado"><i class="fa-solid fa-circle-check"></i> OPERATIVO</span>
+                    </div>
+                </div>
+            </header>
+
+            <section id="sec-resumen" class="app-section active">
+                <div class="grid grid-3">
+                    <div class="card card-premium">
+                        <span class="card-label">SALDO DISPONIBLE LIQUIDO</span>
+                        <div class="balance-display">
+                            <span class="currency">Q</span>
+                            <span id="balance-amount" class="amount">0.00</span>
+                        </div>
+                        <p class="card-footer-text">Actualizado en tiempo real mediante ledger digital.</p>
+                    </div>
+
+                    <div class="card grid-span-2">
+                        <h3>Evolución de Flujo Patrimonial</h3>
+                        <div class="chart-container" style="position: relative; height:140px; width:100%">
+                            <canvas id="financialChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card margin-top-lg">
+                    <h3>Registro de Movimientos Históricos</h3>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Fecha de Ejecución</th>
+                                    <th>Descripción Operativa</th>
+                                    <th>Referencia de Servicio</th>
+                                    <th>Impacto de Capital</th>
+                                </tr>
+                        </table>
+                        <tbody id="table-movements-body">
+                        </tbody>
+                        </table>
+                        </div>
+                </div>
+            </section>
+            <section id="sec-transferencias" class="app-section">
+                <div class="section-intro">
+                    <h2>Transferencias Seguras Interbancarias</h2>
+                    <p>Mueve capital instantáneamente hacia cuentas del mismo ecosistema o entidades externas.</p>
+                </div>
+
+                <div class="card max-w-md">
+                    <form id="form-transfer">
+                        <div class="input-group">
+                            <label>Identificador de Cuenta Destino (ID)</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                                <input id="transfer-account" placeholder="Ej. 104032" required>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Monto de Capital a Transferir (Q)</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-dollar-sign"></i>
+                                <input type="number" step="0.01" id="transfer-amount" placeholder="0.00" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-full">Ejecutar Transferencia Estratégica</button>
+                    </form>
+                </div>
+            </section>
+            <section id="sec-donaciones" class="app-section">
+                <div class="section-intro">
+                    <h2>Módulo de Donaciones Corporativas</h2>
+                    <p>Realiza aportes directos a fundaciones benéficas. El sistema procesará el cobro mediante tu API y dividirá los fondos.</p>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3>Ejecutar Donación Social</h3>
+                        <p class="form-desc" style="margin-bottom: 15px;">Los fondos serán debitados automáticamente de tu saldo actual mediante la API central.</p>
+                        <form id="form-donar-banco">
+                            <div class="input-group">
+                                <label>Seleccionar Institución Destinataria</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-building-ngo"></i>
+                                    <select id="donation-institution" style="width: 100%; background: var(--bg-surface-soft); color: var(--text-primary); border: 1px solid var(--border-color); padding: 12px; border-radius: 6px;">
+                                        <option value="1">TELETON GUATEMALA</option>
+                                        <option value="2">AYUVI (Fondo de Niños con Cáncer)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label>Monto del Aporte Solidario (Q)</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                                    <input type="number" step="0.01" id="donation-amount" placeholder="0.00" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-full">Autorizar y Procesar Donación</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <h3>Historial Global de Donaciones (API Azure)</h3>
+                        <p class="form-desc" style="margin-bottom: 15px;">Auditoría de desgloses (95% Fundación / 5% Comisión Banco) consumidos desde tu servicio.</p>
+                        <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Código Banco</th>
+                                        <th>Total</th>
+                                        <th>95% Org</th>
+                                        <th>5% Banco</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-donaciones-api-body">
+                                    <tr><td colspan="4" style="text-align:center; color:var(--text-secondary);">Cargando registros de Azure...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
